@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 // import './App.css'
 import { extend, useThree, useFrame, Canvas } from "@react-three/fiber";
 import { Stats, OrbitControls } from "@react-three/drei";
@@ -59,7 +59,55 @@ const SolarPannel = (props: {
   </>
 );
 
-const AllSolarPannel = (): any => {
+const AllSolarPannel = (props: {
+  nb_pannel_x: number;
+  nb_pannel_y: number;
+  pannel_span_x: number;
+  pannel_span_y: number;
+  pannel_height: number;
+  pannel_size_x: number;
+  pannel_size_y: number;
+  pannel_rotation: number;
+}): any => {
+  const info = {
+    start_x: 30,
+    start_y: 30,
+    floor: floor,
+  };
+
+  var nb_pannel_x = 0,
+    nb_pannel_y = 0;
+  var pannel_x = props.pannel_size_x / 2,
+    pannel_y = props.pannel_size_y / 2;
+  var returnArray = [];
+
+  while (nb_pannel_x < props.nb_pannel_x) {
+    while (nb_pannel_y < props.nb_pannel_y) {
+      returnArray.push(
+        <SolarPannel
+          pannel_height={props.pannel_height}
+          pannel_x={pannel_x}
+          pannel_y={pannel_y}
+          rotation={props.pannel_rotation}
+          pannel_size_height={props.pannel_size_y}
+          pannel_size_width={props.pannel_size_x}
+          floor={{ height: info.floor.height, width: info.floor.width }}
+        />
+      );
+
+      pannel_y += props.pannel_size_y + props.pannel_span_y;
+      nb_pannel_y++;
+    }
+    nb_pannel_y = 0;
+    pannel_y = props.pannel_size_y / 2;
+    pannel_x += props.pannel_size_x + props.pannel_span_x;
+    nb_pannel_x++;
+  }
+
+  return returnArray;
+};
+
+export default function App() {
   const info = {
     start_x: 30,
     start_y: 30,
@@ -74,59 +122,95 @@ const AllSolarPannel = (): any => {
     floor: floor,
   };
 
-  var nb_pannel_x = 0,
-    nb_pannel_y = 0;
-  var pannel_x = info.pannel_size_x / 2,
-    pannel_y = info.pannel_size_y / 2;
-  var returnArray = [];
+  const [nb_pannel_x, setNb_pannel_x] = useState(10);
+  const [nb_pannel_y, setNb_pannel_y] = useState(6);
+  const [pannel_span_x, setPannel_span_x] = useState(8);
+  const [pannel_span_y, setPannel_span_y] = useState(14);
+  const [pannel_height, setPannel_height] = useState(15);
+  const [pannel_size_x, setPannel_size_x] = useState(12);
+  const [pannel_size_y, setPannel_size_y] = useState(21);
+  const [pannel_rotation, setPannel_rotation] = useState(20);
 
-  while (nb_pannel_x < info.nb_pannel_x) {
-    while (nb_pannel_y < info.nb_pannel_y) {
-      returnArray.push(
-        <SolarPannel
-          pannel_height={info.pannel_height}
-          pannel_x={pannel_x}
-          pannel_y={pannel_y}
-          rotation={info.pannel_rotation}
-          pannel_size_height={info.pannel_size_y}
-          pannel_size_width={info.pannel_size_x}
-          floor={{ height: info.floor.height, width: info.floor.width }}
-        />
-      );
-
-      pannel_y += info.pannel_size_y + info.pannel_span_y;
-      nb_pannel_y++;
-    }
-    nb_pannel_y = 0;
-    pannel_y = info.pannel_size_y / 2;
-    pannel_x += info.pannel_size_x + info.pannel_span_x;
-    nb_pannel_x++;
-  }
-
-  // for (let  = info.pannel_size_x / 2; x - info.floor.width / 2 < info.floor.width; x+= info.) {
-
-  // }
-
-  return returnArray;
-};
-
-export default function App() {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
-      <Canvas camera={{ position: [0, 50, 0] }} shadows>
-        <OrbitControls />
-        <ambientLight color="#fff" intensity={0.2} />
-        <pointLight visible={true} position={[-200, 200, -200]} castShadow />
-        <mesh position={[-200, 200, -200]}>
-          <sphereGeometry args={[5, 32]} />
-          <meshStandardMaterial attach="material" color="yellow" transparent />
-        </mesh>
-        <Floor height={floor.height} width={floor.width} />
+      <div
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          zIndex: 0,
+        }}
+      >
+        <Canvas camera={{ position: [0, 50, 0] }} shadows>
+          <OrbitControls />
+          <ambientLight color="#fff" intensity={0.3} />
+          <pointLight visible={true} position={[-200, 200, -200]} castShadow />
+          <mesh position={[-200, 200, -200]}>
+            <sphereGeometry args={[10, 32]} />
+            <meshStandardMaterial
+              attach="material"
+              color="yellow"
+              transparent
+            />
+          </mesh>
+          <Floor height={floor.height} width={floor.width} />
 
-        <AllSolarPannel />
+          <AllSolarPannel
+            nb_pannel_x={nb_pannel_x}
+            nb_pannel_y={nb_pannel_y}
+            pannel_span_x={pannel_span_x}
+            pannel_span_y={pannel_span_y}
+            pannel_height={pannel_height}
+            pannel_size_x={pannel_size_x}
+            pannel_size_y={pannel_size_y}
+            pannel_rotation={pannel_rotation}
+          />
 
-        {/* <SolarPannel pannel_height={10} pannel_x={40} pannel_y={50} rotation={15} pannel_size_height={10} pannel_size_width={20} floor={{height: floor.height, width: floor.width}}/> */}
-      </Canvas>
+          {/* <SolarPannel pannel_height={10} pannel_x={40} pannel_y={50} rotation={15} pannel_size_height={10} pannel_size_width={20} floor={{height: floor.height, width: floor.width}}/> */}
+        </Canvas>
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          zIndex: 1,
+          width: "30%",
+          height: "40%",
+          backgroundColor: "#EEE",
+        }}
+      >
+        <div style={{display: 'flex', margin: '4%'}}>
+          <div>nb_pannel_x :</div>
+          <input type="number" min={0} value={nb_pannel_x} onChange={(e) => setNb_pannel_x(Number(e.currentTarget.value))}/>
+        </div>
+        <div style={{display: 'flex', margin: '4%'}}>
+          <div>nb_pannel_y :</div>
+          <input type="number" min={0} value={nb_pannel_y} onChange={(e) => setNb_pannel_y(Number(e.currentTarget.value))}/>
+        </div>
+        <div style={{display: 'flex', margin: '4%'}}>
+          <div>pannel_span_x :</div>
+          <input type="number" min={0} value={pannel_span_x} onChange={(e) => setPannel_span_x(Number(e.currentTarget.value))}/>
+        </div>
+        <div style={{display: 'flex', margin: '4%'}}>
+          <div>pannel_span_y :</div>
+          <input type="number" min={0} value={pannel_span_y} onChange={(e) => setPannel_span_y(Number(e.currentTarget.value))}/>
+        </div>
+        <div style={{display: 'flex', margin: '4%'}}>
+          <div>pannel_height :</div>
+          <input type="number" min={0} value={pannel_height} onChange={(e) => setPannel_height(Number(e.currentTarget.value))}/>
+        </div>
+        <div style={{display: 'flex', margin: '4%'}}>
+          <div>pannel_size_x :</div>
+          <input type="number" min={0} value={pannel_size_x} onChange={(e) => setPannel_size_x(Number(e.currentTarget.value))}/>
+        </div>
+        <div style={{display: 'flex', margin: '4%'}}>
+          <div>pannel_size_y :</div>
+          <input type="number" min={0} value={pannel_size_y} onChange={(e) => setPannel_size_y(Number(e.currentTarget.value))}/>
+        </div>
+        <div style={{display: 'flex', margin: '4%'}}>
+          <div>pannel_rotation :</div>
+          <input type="number" min={0} value={pannel_rotation} onChange={(e) => setPannel_rotation(Number(e.currentTarget.value))}/>
+        </div>
+      </div>
     </div>
   );
 }
